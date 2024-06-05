@@ -1,0 +1,6 @@
+---
+- name: Install Magma AGW into the kubernetes cluster
+  hosts: all
+  roles:
+      - role: agwc-k8s
+

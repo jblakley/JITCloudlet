@@ -1,0 +1,17 @@
+---
+- name: Starting
+  ansible.builtin.debug:
+    msg: "Deploys the k8s/helm AGW state={{ agwc_state }}"
+    
+- name: Shutdown Docker-Compose AGW
+  become: yes
+  args:
+    chdir: /var/opt/magma/docker/
+  command:		
+    docker-compose --compatibility down
+
+- import_tasks: deploy-agwc-helm.yml
+
+- name: Finished
+  ansible.builtin.debug:
+    msg: "K8s AGW {{agwc_state}}"

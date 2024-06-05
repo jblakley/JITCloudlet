@@ -1,0 +1,29 @@
+---
+- name: Configure Openrtist Values
+  template:
+    src: openrtist_values.yaml.j2
+    dest: "{{ tmp_local }}/openrtist_values.yaml"
+    
+- name: Copy Openrtist Values to helm charts
+  copy:
+    src: "{{ tmp_local }}/openrtist_values.yaml"
+    dest: "{{ helm_local }}/openrtist/values.yaml"
+
+- name: Set alternate architecture name default
+  set_fact:
+    altarch: arch
+
+- name: Set alternate architecture name for x86
+  when: arch == "x86_64"
+  set_fact:
+    altarch: "amd64"
+
+- name: Configure Openscout Values
+  template:
+    src: openscout_values.yaml.j2
+    dest: "{{ tmp_local }}/openscout_values.yaml"
+    
+- name: Copy Openscout Values to helm charts
+  copy:
+    src: "{{ tmp_local }}/openscout_values.yaml"
+    dest: "{{ helm_local }}/openscout/values.yaml"

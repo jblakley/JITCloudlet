@@ -1,0 +1,5 @@
+---
+- name: Remove Edge Apps
+  hosts: all
+  roles:
+    - role: edgeapps-remove

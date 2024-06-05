@@ -1,0 +1,15 @@
+---
+openscout_state: "present"
+openrtist_state: "present"
+
+openrtist_deploy_port: 9099
+openrtist_host_port: 9098
+openrtist_node_port: 30099
+openrtist_repository: cmusatyalab/openrtist
+openrtist_tag: stable
+
+openscout_deploy_port: 9099
+openscout_node_port: 30099
+openscout_repository: cmusatyalab/openscout
+openscout_tag: stable
+elkversion: 8.6.2
