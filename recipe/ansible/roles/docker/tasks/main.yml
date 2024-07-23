@@ -75,11 +75,11 @@
   become: yes
   command: "systemctl restart docker"
 
-- name: Pull alpine docker image	
-  become: yes
-  docker_image:
-    name: alpine
-    source: pull
+#- name: Pull alpine docker image	
+#  become: yes
+#  docker_image:
+#    name: alpine
+#    source: pull
     
 - name: Remove existing docker-compose versions
   become: yes
