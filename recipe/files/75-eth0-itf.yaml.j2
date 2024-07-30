@@ -4,7 +4,9 @@ network:
             dhcp4: false
             dhcp6: false
             addresses: [{{ cloudlet_ip }}/24]
-            gateway4: {{ipgateway_ip}}
+            routes:
+            - to: default
+              via: {{ipgateway_ip}}
             match:
                 macaddress: {{eth0_mac}}
             nameservers:
