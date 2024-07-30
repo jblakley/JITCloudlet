@@ -1,2 +1,4 @@
 
 .project
+recipe/ansible/hosts.yml
+recipe/bootstrap/.env
