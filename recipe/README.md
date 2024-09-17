@@ -26,15 +26,27 @@ Connect the environment as shown in the diagram. Specific network configuration 
 Clone this repository to both the management system and the cloudlet. Set the environment variable `RECIPE_HOME` to the full pathname of the recipe folder (e.g,. `export RECIPE_HOME=/home/ubuntu/<repository>/recipe`).
 
 ## Deploy the Management System (TBD)
-The management system -- at least the Magma Orchestrator (Orc8r) component --  must be deployed before the cloudlet can be fully deployed. Deployment of the cloudlet's AGW requires access to the Orc8r's rootCA.pem and the AGW's control proxy must be configured with the Orc8r domain name when the AGW is deployed.
+The management system -- at least the Magma Orchestrator (Orc8r) component --  must be deployed before the cloudlet can be fully deployed. Deployment of the cloudlet's AGW requires access to the Orc8r's rootCA.pem and the AGW's control proxy must be configured with the Orc8r domain name when the AGW is deployed. Note a single orc8r can server multiple JIT Cloudlets across 4G and 5G networks.
 
 ### Prerequisites
+Ubuntu 20.04 system with >100GB disk.
 
 ### Deploying the Orc8r
+This is the most straightforward guide for deploying the 1.8 Orc8r: [Magma-Galaxy Ansible Deployment](https://github.com/ShubhamTatvamasi/magma-galaxy)
+
+A more DIY guide is here: [Install Orchestrator with Ansible](https://github.com/magma/magma/tree/master/orc8r/cloud/deploy/bare-metal-ansible)
+
+Follow the directions in [Magma-Galaxy Ansible Deployment](https://github.com/ShubhamTatvamasi/magma-galaxy)
+
+When finished, collect your certificate from `/home/magma/magma-galaxy/secrets/rootCA.pem`. You need this to connect AGWs.
+
+To connect to the NMS console, you will also need  `/home/magma/magma-galaxy/secrets/admin_operator.pfx`. The password for the certificate is 'password'.
 
 ### Other Management Systems
+TBD
 
 ### Validating the setup
+Connect to NMS as described in the above guides. If you are unable to connect to NMS, then check that the orc8r kubernetes pods are running cleanly.
 
 ## Deploy the Cloudlet
 The Cloudlet runs the Magma AGW and the sample edge-native applications. In the end state, all run within a single kubernetes cluster. However, the AGW is first deployed using docker-compose and then transitioned into the kubernetes cluster. So, deployment of the cloudlet involves:
@@ -61,7 +73,9 @@ Edit the variables in .env to your preferred values. Then run:
 $ bash bootstrap.sh
 ```
 
-Reboot and test that docker works correctly (e.g., `docker ps` should respond with no containers running). You may want to to inspect the `$RECIPE_HOME/ansible/hosts.yml` file to validate the configuration set up by `bootstrap.sh`. 
+Reboot and test that docker works correctly (e.g., `docker ps` should respond with no containers running). You may want to to inspect the `$RECIPE_HOME/ansible/hosts.yml` file to validate the configuration set up by `bootstrap.sh`.
+
+`bootstrap.sh` runs an ansible playbook called `deploy-common-system.yml`. If you run into issues with during this phase, you may need rerun this playbook.
 
 ### AGW network configuration
 
@@ -96,6 +110,8 @@ $ docker ps
 
 All AGW should be running and showing healthy. The playbook will print the information needed to provision the AGW in the Orc8r. You can do that provisioning at this point.
 
+At this point, you should have a working dockerized AGW. If you don't care about kubernetes, then you can proceed without it.
+
 ### Kubernetes deployment
 This step deploys a kubernetes cluster that will run both the AGW and the EdgeApps.
 
@@ -128,6 +144,8 @@ $ kubectl exec -it ${MAGMADPOD} --namespace magma -- show_gateway_info.py
 
 ## Deploy the sample edge-native applications
 You can now deploy the sample edge-native applications (`openscout` and `openrtist`) at this point. The helm charts in `$RECIPE_HOME/charts` do the actual deployment.
+
+This section assumes that you have already deployed a kubernetes cluster on the Cloudlet.
 
 ```
 $ ansible-playbook deploy-edgeapps.yml -K
