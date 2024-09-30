@@ -1,0 +1,5 @@
+---
+- name: Install Edge Apps
+  hosts: all
+  roles:
+    - role: edgeapps

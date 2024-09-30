@@ -1,0 +1,20 @@
+# Default values for openrtist service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+deployment:
+  replicas: 1
+  port: {{ openrtist_deploy_port }}
+  protocol: TCP
+
+image:
+  repository: {{ openrtist_repository }}
+  tag: {{ openrtist_tag }}
+  pullPolicy: IfNotPresent
+
+service:
+  name: openrtist-svc
+  type: NodePort
+  port: {{ openrtist_host_port }}
+  targetPort: {{ openrtist_deploy_port }}
+  nodePort: {{ openrtist_node_port }}
