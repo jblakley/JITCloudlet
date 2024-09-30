@@ -1,0 +1,8 @@
+---
+- name: Install MetallLB
+  kubernetes.core.helm:
+    name: metallb
+    chart_ref: metallb/metallb
+    release_namespace: metallb-system
+    chart_version: "{{ metallb_chart_version }}"
+    create_namespace: true

@@ -1,0 +1,21 @@
+---
+- name: Install OpenEBS
+  kubernetes.core.helm:
+    name: openebs
+    chart_ref: openebs/openebs
+    release_namespace: openebs
+    chart_version: "{{ openebs_chart_version }}"
+    create_namespace: true
+    values:
+      localpv-provisioner:
+        hostpathClass:
+          isDefaultClass: true
+      engines:
+        local:
+          lvm:
+            enabled: false
+          zfs:
+            enabled: false
+        replicated:
+          mayastor:
+            enabled: false

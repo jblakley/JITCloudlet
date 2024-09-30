@@ -33,11 +33,11 @@ The Magma Orchestrator (Orc8r) --  must be deployed before the AGW can be fully 
 Ubuntu 20.04 system with >100GB disk.
 
 ### Deploying the Orc8r
-This is the most straightforward guide for deploying the 1.8 Orc8r: [Magma-Galaxy Ansible Deployment](https://github.com/ShubhamTatvamasi/magma-galaxy)
+This is the most straightforward guide for deploying the 1.8 Orc8r. It works with Magma 1.9 AGW and will presumably be upgraded for 1.9 eventually: [Magma-Galaxy Ansible Deployment](https://github.com/jblakley/magma-galaxy)
 
 A more DIY guide is here: [Install Orchestrator with Ansible](https://github.com/magma/magma/tree/master/orc8r/cloud/deploy/bare-metal-ansible)
 
-Follow the directions in [Magma-Galaxy Ansible Deployment](https://github.com/ShubhamTatvamasi/magma-galaxy)
+Follow the directions in [Magma-Galaxy Ansible Deployment](https://github.com/jblakley/magma-galaxy)
 
 When finished, collect your certificate from `/home/magma/magma-galaxy/secrets/rootCA.pem`. You need this to connect AGWs.
 
