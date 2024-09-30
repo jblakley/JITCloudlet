@@ -8,8 +8,14 @@ The JIT Cloudlet Reference Architecture is shown below.
 Deployment of the prototype is primarily accomplished using an ansible, docker-compose, helm based recipe executed on a fresh Ubuntu system. To use this recipe:
 
 ```
-cd ./recipe
+cd ./JITC_recipe
 ```
 
-and open the README
+and open the README.
 
+If you just want to deploy Magma:
+
+```
+cd ./Magma_recipe
+```
+and open the README.
