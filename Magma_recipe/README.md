@@ -1,6 +1,6 @@
-# A Just-In-Time Cloudlet Recipe
+# A Magma Deployment Recipe
 
-The Just-In-Time Cloudlet as described in the CMU Technical Report, *[The Just-In-Time Cloudlet](http://reports-archive.adm.cs.cmu.edu/anon/2023/abstracts/23-138.html)*, provides an integrated platform built on cloud-native open-source software and COTS hardware. The technical report provides a reference architecture and the details of a prototype implementation to demonstrate the concept and the architecture. Construction of the prototype required substantial system and deployment integration effort. The purpose of this recipe is to make it easier for those who want to replicate that prototype. Since the report describes the hardware and physical configuration of the prototype, this recipe focuses on the software deployment.
+While the JIT Cloudlet Recipe deploys the full JIT Cloudlet solution, this recipe deploys a standalone Magma AGW, Orc8r, and connecting it to a gNB and UE. This recipe also focuses on a 5G deployment rather than the LTE deployment used in the JIT Cloudlet Recipe.
 
 DISCLAIMER: As with many deployment recipes, successful execution of the recipe is dependent on adjusting it to the specifics of a given environment. There is no guarantee this recipe can work "out of the box" in an arbitrary environment. Familiarity with Linux, Kubernetes, Helm, Docker, Magma, IP Networking, and Ansible are likely to be needed to assure successful completion.
 
@@ -11,22 +11,23 @@ The recipe consists of the following primary steps:
 3. Deploy the Cloudlet
 4. Connect a Phone a.k.a. UE
 5. Validate the base platform
-6. Deploy the sample edge-native applications
-7. Demonstrate the protoype
 
-The JIT Cloudlet Reference Architecture is shown below.
-![Reference_Architecture](https://github.com/jblakley/CMUProjects/assets/6760112/4ae93c2a-d3f5-4e0e-88ad-ffaafed2e76f)
+
 
 ## Preparing your environment
 
-You will need two physical systems (the **management system** and the **cloudlet**) running Ubuntu 20.04. The cloudlet requires two physical ethernet network interface cards to support the Magma Access Gateway (AGW). The specific systems used in the prototype are provided in the tech report. The prototype used an x86-based laptop to run the Orc8r and an ARM-based desktop server to act as the cloudlet. As of this publication, the laptop must be x86 while the cloudlet can be either x86 or ARM. You will also need a small router and switch as shown in the reference architecture. Final connnectivity and functionality testing will require a smartphone and an ability to create a SIM for the Magma network.
+You will need two physical systems (the **Magma Orchestrator (Orc8r)** system and the **Magma Access Gateway (AGW)** system both running Ubuntu 20.04. The AGW requires two physical ethernet network interface cards.
 
-Connect the environment as shown in the diagram. Specific network configuration will be done later but it is good to validate connectivity between the systems at this point.
+## Magma Deployment Paradigm
+This recipe assumes a bare metal install of the Orc8r and AGW. The Orc8r deployment will deploy a kubernetes (k8s) cluster on the bare metal Or8r and the Orc8r services in the cluster. The AGW deployment uses docker and docker-compose deployment on the baremetal AGW system.
 
-Clone this repository to both the management system and the cloudlet. Set the environment variable `RECIPE_HOME` to the full pathname of the recipe folder (e.g,. `export RECIPE_HOME=/home/ubuntu/<repository>/recipe`).
+This recipe deploys a 5G network using Magma v1.9.
 
-## Deploy the Management System (TBD)
-The management system -- at least the Magma Orchestrator (Orc8r) component --  must be deployed before the cloudlet can be fully deployed. Deployment of the cloudlet's AGW requires access to the Orc8r's rootCA.pem and the AGW's control proxy must be configured with the Orc8r domain name when the AGW is deployed. Note a single orc8r can server multiple JIT Cloudlets across 4G and 5G networks.
+Clone this repository to both the Orc8r system and the AGW System. Set the environment variable `RECIPE_HOME` to the full pathname of the recipe folder (e.g,. `export RECIPE_HOME=/home/ubuntu/<repository>/recipe`).
+
+
+## Deploy the Orc8r (TBD)
+The Magma Orchestrator (Orc8r) --  must be deployed before the AGW can be fully deployed. Deployment of the AGW requires access to the Orc8r's rootCA.pem and the AGW's control proxy must be configured with the Orc8r domain name when the AGW is deployed. Note a single orc8r can server multiple AGW across 4G and 5G networks.
 
 ### Prerequisites
 Ubuntu 20.04 system with >100GB disk.
@@ -42,21 +43,15 @@ When finished, collect your certificate from `/home/magma/magma-galaxy/secrets/r
 
 To connect to the NMS console, you will also need  `/home/magma/magma-galaxy/secrets/admin_operator.pfx`. The password for the certificate is 'password'.
 
-### Other Management Systems
-TBD
-
 ### Validating the setup
 Connect to NMS as described in the above guides. If you are unable to connect to NMS, then check that the orc8r kubernetes pods are running cleanly.
 
-## Deploy the Cloudlet
-The Cloudlet runs the Magma AGW and the sample edge-native applications. In the end state, all run within a single kubernetes cluster. However, the AGW is first deployed using docker-compose and then transitioned into the kubernetes cluster. So, deployment of the cloudlet involves:
+## Deploy the AGW
+Deployment of the cloudlet involves:
 
 1. Configuring deployment specific environment variables and installing prerequisites (`.env`, `bootstrap.sh`, reboot)
 2. Setting up the AGW network configuration  (`agwc-networking` playbook)
 3. AGW docker-compose deployment (`agwc1` playbook, reboot, `agcw2` playbook)
-4. Kubernetes deployment (`kubernetes` playbook)
-5. AGW deployment on kubernetes (`agwc-k8s` playbook)
-6. Edge application deployment on kubernetes (`edgeapps` playbook)
 
 ### Initial configuration and installation of prerequistes
 
@@ -110,28 +105,7 @@ $ docker ps
 
 All AGW should be running and showing healthy. The playbook will print the information needed to provision the AGW in the Orc8r. You can do that provisioning at this point.
 
-At this point, you should have a working dockerized AGW. If you don't care about kubernetes, then you can proceed without it.
-
-### Kubernetes deployment
-This step deploys a kubernetes cluster that will run both the AGW and the EdgeApps.
-
-```
-$ ansible-playbook deploy-kubernetes.yml -K
-$ k9s
-```
-
-The `k9s` program is a useful command line tool for monitoring kubernetes clusters. You should see each of the `kube-system` pods successfully deploying. `kubectl get pods --all-namespaces` can also be used at this point.
-
-### AGW deployment on kubernetes
-
-This step takes down the docker-compose AGW and restarts it within the kubernetes cluster in the `magma` namespace. The helm charts in `$RECIPE_HOME/charts/agwc` do the actual deployment.
-
-```
-$ ansible-playbook deploy-agwc-k8s.yml -K
-$ k9s
-```
-
-You should see the magma pods starting successfully.
+At this point, you should have a working dockerized AGW.
 
 ### Connect the Orc8r and AGW
 
@@ -141,18 +115,6 @@ If you haven't already done so, you should provision the AGW in the Orc8r. Get t
 $ MAGMADPOD=$(kubectl get pods --namespace magma -l app.kubernetes.io/component=magmad -o json|jq -r '.items[].metadata.name')
 $ kubectl exec -it ${MAGMADPOD} --namespace magma -- show_gateway_info.py
 ```
-
-## Deploy the sample edge-native applications
-You can now deploy the sample edge-native applications (`openscout` and `openrtist`) at this point. The helm charts in `$RECIPE_HOME/charts` do the actual deployment.
-
-This section assumes that you have already deployed a kubernetes cluster on the Cloudlet.
-
-```
-$ ansible-playbook deploy-edgeapps.yml -K
-$ k9s
-```
-
-You should see the application pods starting successfully in their own namespaces.
 
 ## Connect a Phone a.k.a. UE
 
@@ -196,4 +158,3 @@ reboot
 
 # TODO
 
-getting variables (e.g., container repositories, tags through bootstrap to ansible to helm)
