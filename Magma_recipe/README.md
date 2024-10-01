@@ -67,6 +67,13 @@ Edit the variables in .env to your preferred values. Then run:
 ```
 $ bash bootstrap.sh
 ```
+#### Notes on the `.env` variables:
+- MAGMA_DN is the domain for your Orc8r
+- PRIVATE_KEY is used for ansible hosts
+- ROOT_CA_PATH  is the directory that contains your Orc8r's `rootCA.pem`
+- At this writing:
+  - `DOCKER_IMAGE_VERSION=20.10.21-0ubuntu1~20.04.2`
+  - `DOCKER_COMPOSE_VERSION="v2.17.2"`
 
 Reboot and test that docker works correctly (e.g., `docker ps` should respond with no containers running). You may want to to inspect the `$RECIPE_HOME/ansible/hosts.yml` file to validate the configuration set up by `bootstrap.sh`.
 
@@ -82,6 +89,10 @@ $ ansible-playbook deploy-agwc-networking.yml -K
 $ ip a
 ```
 Verify that network for eth0 and eth1 are correct. You should be able to ping the management system and the router over eth0 and the eNB over eth1.
+
+#### Notes on network configuration
+- Your network renderer should be set to `NetworkManager` (check: `/etc/netplan/00-installer-config.yaml`)
+- You may have issues with connectivity if this stage fails. Try to have direct console access during this playbook's execution
 
 ### AGW docker-compose deployment (Part 1 and Part 2)
 
