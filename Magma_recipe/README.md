@@ -2,17 +2,18 @@
 
 While the JIT Cloudlet Recipe deploys the full JIT Cloudlet solution, this recipe deploys a standalone Magma AGW, Orc8r, and connecting it to a gNB and UE. This recipe also focuses on a 5G deployment rather than the LTE deployment used in the JIT Cloudlet Recipe.
 
-DISCLAIMER: As with many deployment recipes, successful execution of the recipe is dependent on adjusting it to the specifics of a given environment. There is no guarantee this recipe can work "out of the box" in an arbitrary environment. Familiarity with Linux, Kubernetes, Helm, Docker, Magma, IP Networking, and Ansible are likely to be needed to assure successful completion.
+DISCLAIMER: As with many deployment recipes, successful execution of the recipe is dependent on adjusting it to the specifics of a given environment. There is no guarantee this recipe can work "out of the box" in an arbitrary environment. Familiarity with Linux, Docker, Magma, IP Networking, and Ansible are likely to be needed to assure successful completion. As compared with the [JITC_recipe](../JITC_recipe), this recipe does not:
+
+- Deploy the AGW in Kubernetes. It uses docker-compose to deploy the AGW containers.
+- Include connecting a gNB or UE to the network.
 
 The recipe consists of the following primary steps:
 
 1. Bootstrapping the initial environment
-2. Deploy the Management System
-3. Deploy the Cloudlet
-4. Connect a Phone a.k.a. UE
+2. Deploy the Orchestrator
+3. Deploy the Access Gateway
+4. Connect the AGW to the Orc8r
 5. Validate the base platform
-
-
 
 ## Preparing your environment
 
@@ -114,25 +115,15 @@ $ ansible-playbook deploy-agwc2.yml -K
 $ docker ps
 ```
 
-All AGW should be running and showing healthy. The playbook will print the information needed to provision the AGW in the Orc8r. You can do that provisioning at this point.
-
-At this point, you should have a working dockerized AGW.
-
-### Connect the Orc8r and AGW
-
-If you haven't already done so, you should provision the AGW in the Orc8r. Get the AGW configuration data with:
+All AGW containers should be running and showing healthy. The playbook will print the information needed to provision the AGW in the Orc8r. You can do that provisioning at this point. If you lose the info:
 
 ```
-$ MAGMADPOD=$(kubectl get pods --namespace magma -l app.kubernetes.io/component=magmad -o json|jq -r '.items[].metadata.name')
-$ kubectl exec -it ${MAGMADPOD} --namespace magma -- show_gateway_info.py
+$ docker exec magmad show_gateway_info.py
 ```
-
-## Connect a Phone a.k.a. UE
+Use this to connect the AGW to the Orc8r
 
 ## Validate the base platform
-
-
-## Demonstrate the protoype
+At this point, you should have a working dockerized AGW.
 
 ## Other tools, tips, debugging suggestions
 
@@ -140,16 +131,6 @@ $ kubectl exec -it ${MAGMADPOD} --namespace magma -- show_gateway_info.py
 
 
 # Notes to be dealt with later
-
-## Set up ansible
-```
-# Can this be part of playbook TODO
-cd git/kubernetes
-# Can these be part of requirements.yml TODO
-ansible-galaxy collection install community.kubernetes
-ansible-galaxy collection install cloud.common
-ansible-galaxy collection install -r collections/requirements.yml
-```
 
 Do this:
 https://askubuntu.com/questions/1376119/ubuntu-20-04-nic-naming-and-match-mac-with-netplan
