@@ -1,2 +1,0 @@
-Prerequisites for Magma
-=========

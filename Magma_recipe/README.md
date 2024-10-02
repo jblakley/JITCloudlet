@@ -33,7 +33,7 @@ The Magma Orchestrator (Orc8r) --  must be deployed before the AGW can be fully 
 Ubuntu 20.04 system with >100GB disk.
 
 ### Deploying the Orc8r
-This is the most straightforward guide for deploying the 1.8 Orc8r. It works with Magma 1.9 AGW and will presumably be upgraded for 1.9 eventually: [Magma-Galaxy Ansible Deployment](https://github.com/jblakley/magma-galaxy)
+This is the most straightforward guide for deploying the 1.8 Orc8r. It works with Magma 1.9 AGW and will presumably be upgraded for 1.9 eventually: [Magma-Galaxy Ansible Deployment](./magma-galaxy)
 
 A more DIY guide is here: [Install Orchestrator with Ansible](https://github.com/magma/magma/tree/master/orc8r/cloud/deploy/bare-metal-ansible)
 
@@ -101,6 +101,7 @@ Verify that network for eth0 and eth1 are correct. You should be able to ping th
 - You may have issues with connectivity if this stage fails. Try to have direct console access during this playbook's execution
 - Configuration of the AGW's ethernet networking has been one of the more problematic parts of bringing up an AGW. The playbook sets up the networking prior to actually deploying the gateway to prevent some issues that arise during. However, the deployment may impact some of the configuration.
 - If you find that your network names are changing after reboots, make sure you do [this](https://askubuntu.com/questions/1255823/network-interface-names-change-every-reboot) Your grub configuration is wrong. Make it like this:
+
 ```
 $ sudo vim /etc/default/grub
 ...

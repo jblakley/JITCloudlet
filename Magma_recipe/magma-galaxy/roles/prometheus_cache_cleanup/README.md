@@ -1,2 +1,0 @@
-Prometheus Cache Cleanup
-========================

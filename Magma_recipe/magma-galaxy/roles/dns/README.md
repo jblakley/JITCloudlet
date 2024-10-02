@@ -1,2 +1,0 @@
-Magma DNS entries
-=========

@@ -1,2 +1,0 @@
-Rancher Kubernetes Engine
-=========
