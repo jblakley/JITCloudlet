@@ -1,0 +1,53 @@
+---
+
+- name: Set Mongodb Version Info
+  when: ansible_distribution_major_version == "22"
+  set_fact:
+    mongo_release_name: "jammy"
+    
+- name: Set Mongodb Version Info
+  when: ansible_distribution_major_version == "20"
+  set_fact:
+    mongo_release_name: "focal"
+    
+- name: Install gnupg
+  become: yes
+  apt:
+    name: 
+    - gnupg
+    - curl
+    - ca-certificates
+
+- name: Add mongodb key
+  become: yes
+  apt_key:
+    url: https://www.mongodb.org/static/pgp/server-7.0.asc
+    state: present
+
+- name: Build mongodb apt sources list
+  become: yes
+  apt_repository:
+    repo: deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu {{ mongo_release_name }}/mongodb-org/7.0 multiverse
+    state: present
+    filename: mongodb-org-7.0.list
+
+- name: Install mongodb
+  become: yes
+  apt:
+    name:
+    - mongodb-org
+    update_cache: true 
+
+- name: Add Open5GS repository
+  become: yes
+  apt_repository:
+    repo: ppa:open5gs/latest
+    state: present
+    update_cache: true
+    
+- name: Install Open5GS
+  become: yes
+  apt:
+    name:
+    - open5gs
+    update_cache: true

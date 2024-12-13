@@ -1,0 +1,55 @@
+---
+- name: Populate amf.yaml
+  template:
+     src: "{{files_local}}/amf.yaml.j2"
+     dest: "{{ tmp_local }}/amf.yaml"
+     mode: '0644'
+
+- name: Install  amf.yaml
+  become: yes
+  copy:
+    src: "{{ tmp_local }}/amf.yaml"
+    dest: "/etc/open5gs/amf.yaml"
+
+- name: Populate nrf.yaml
+  template:
+     src: "{{files_local}}/nrf.yaml.j2"
+     dest: "{{ tmp_local }}/nrf.yaml"
+     mode: '0644'
+
+- name: Install  nrf.yaml
+  become: yes
+  copy:
+    src: "{{ tmp_local }}/nrf.yaml"
+    dest: "/etc/open5gs/nrf.yaml"
+    
+- name: Populate upf.yaml
+  template:
+     src: "{{files_local}}/upf.yaml.j2"
+     dest: "{{ tmp_local }}/upf.yaml"
+     mode: '0644'
+
+- name: Install  upf.yaml
+  become: yes
+  copy:
+    src: "{{ tmp_local }}/upf.yaml"
+    dest: "/etc/open5gs/upf.yaml"
+
+- name: Restart open5gs-nrfd
+  become: yes
+  systemd:
+    name: open5gs-nrfd
+    state: restarted
+
+- name: Restart open5gs-amfd
+  become: yes
+  systemd:
+    name: open5gs-amfd
+    state: restarted
+    
+- name: Restart open5gs-upfd
+  become: yes
+  systemd:
+    name: open5gs-upfd
+    state: restarted
+    

@@ -1,0 +1,14 @@
+---
+- name: Deploy Open5GS
+  ansible.builtin.debug:
+    msg: "Starting Open5GS deployment"
+    
+# - import_tasks: set-operating-system.yml
+# - import_tasks: install-open5gs.yml
+# - import_tasks: install-open5gs-webui.yml
+# - import_tasks: configure-open5gs.yml
+- import_tasks: configure-routing.yml
+
+- name: Finished
+  ansible.builtin.debug:
+    msg: "Open5GS Deployed Complete"

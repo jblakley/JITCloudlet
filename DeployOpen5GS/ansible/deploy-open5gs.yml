@@ -1,0 +1,5 @@
+---
+- name: Install Open5GS
+  hosts: all
+  roles:
+    - role: open5gs

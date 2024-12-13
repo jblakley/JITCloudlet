@@ -1,0 +1,12 @@
+---
+- name: Set up routing
+  become: yes
+  shell:
+    bash "{{ bin_local }}/setup_routing.sh"
+    
+- name: Make net.ipv4.ip_forward=1 persistent
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/sysctl.conf
+    regexp: '#net.ipv4.ip_forward=1'
+    line: net.ipv4.ip_forward=1

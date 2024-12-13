@@ -1,0 +1,12 @@
+---
+- name: Install Common System
+  hosts: all
+  roles:
+    - role: prerequisites
+  
+  tasks:
+  - name: Reboot
+    pause:
+      prompt: Reboot your system now; wireshark (at least) requires reboot here
+      echo: yes
+ 
